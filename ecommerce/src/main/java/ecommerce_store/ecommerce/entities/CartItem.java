@@ -23,10 +23,6 @@ public class CartItem {
     private Timestamp modifiedAt;
 
     @ManyToOne
-    @JoinColumn(name = "sessionId", insertable = false, updatable = false)
-    private ShoppingSession session;
-
-    @ManyToOne
     @JoinColumn(name = "productId", insertable = false, updatable = false)
     private Product product;
 

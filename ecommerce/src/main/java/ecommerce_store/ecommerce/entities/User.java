@@ -28,9 +28,6 @@ public class User {
     private Set<OrderDetails> orders;
 
     @OneToMany(mappedBy = "user")
-    private Set<ShoppingSession> shoppingSessions;
-
-    @OneToMany(mappedBy = "user")
     private Set<UserAddress> addresses;
 
     @OneToMany(mappedBy = "user")
