@@ -17,7 +17,6 @@ public class OrderDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long userId;
     private double total;
     private Long paymentId;
@@ -35,5 +34,4 @@ public class OrderDetails {
     @JoinColumn(name = "paymentId", insertable = false, updatable = false)
     private PaymentDetails paymentDetails;
 
-    // getters and setters
 }

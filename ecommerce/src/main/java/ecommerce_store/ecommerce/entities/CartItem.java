@@ -15,8 +15,6 @@ public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private Long sessionId;
     private Long productId;
     private int quantity;
     private Timestamp createdAt;

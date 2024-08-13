@@ -28,5 +28,7 @@ public class Discount {
     @OneToMany(mappedBy = "discount")
     private Set<Product> products;
 
+
+
     // getters and setters
 }

@@ -20,7 +20,6 @@ public class ProductInventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private int quantity;
     private Timestamp createdAt;
     private Timestamp modifiedAt;
