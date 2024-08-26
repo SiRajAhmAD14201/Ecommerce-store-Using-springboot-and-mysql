@@ -5,36 +5,36 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "product") // Optional: specify the table name if different from the default
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "name")
     private String name;
-    private String desc;
-    private Long categoryId;
-    private Long inventoryId;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "price")
     private double price;
-    private Long discountId;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
-    private Timestamp deletedAt;
 
     @ManyToOne
-    @JoinColumn(name = "categoryId", insertable = false, updatable = false)
+    @JoinColumn(name = "category_id") // Ensure this matches the foreign key column in your database
     private ProductCategory category;
 
     @ManyToOne
-    @JoinColumn(name = "inventoryId", insertable = false, updatable = false)
+    @JoinColumn(name = "inventory_id") // Ensure this matches the foreign key column in your database
     private ProductInventory inventory;
 
     @ManyToOne
-    @JoinColumn(name = "discountId", insertable = false, updatable = false)
+    @JoinColumn(name = "discount_id") // Ensure this matches the foreign key column in your database
     private Discount discount;
 
-    // getters and setters
+    // No need for explicit getters and setters if using Lombok @Data
 }

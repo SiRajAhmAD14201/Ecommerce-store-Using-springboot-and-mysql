@@ -5,6 +5,8 @@ import ecommerce_store.ecommerce.dto.response.PaymentDetailsResponse;
 import ecommerce_store.ecommerce.service.interfaces.PaymentDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,6 +39,8 @@ public class PaymentDetailsController {
         return new ResponseEntity<>(paymentDetailsResponse, HttpStatus.OK);
     }
 
+
+
     @Operation(summary = "Add payment details", description = "Creates new payment details in the database")
     @PostMapping
     public ResponseEntity<PaymentDetailsRequest> savePaymentDetails(
@@ -45,6 +49,31 @@ public class PaymentDetailsController {
         PaymentDetailsRequest paymentDetailsRequest1=paymentDetailsService.savePaymentDetails(paymentDetailsRequest);
         return new ResponseEntity<>(paymentDetailsRequest1,HttpStatus.CREATED);
     }
+
+
+
+
+    @Operation(summary = "Update Payment Details", description = "Update existing payment details by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Payment Details updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid ID supplied"),
+            @ApiResponse(responseCode = "404", description = "Payment Details not found")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<PaymentDetailsRequest> updatePaymentDetails(
+            @Parameter(description = "ID of the payment details to update") @PathVariable Long id,
+            @RequestBody PaymentDetailsRequest paymentDetailsRequest) {
+
+        PaymentDetailsRequest updatedPaymentDetails = paymentDetailsService.updatePaymentDetails(id, paymentDetailsRequest);
+
+        if (updatedPaymentDetails != null) {
+            return new ResponseEntity<>(updatedPaymentDetails, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
     @Operation(summary = "Delete payment details", description = "Deletes payment details from the database")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePaymentDetails(

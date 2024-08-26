@@ -9,5 +9,6 @@ public interface OrderItemService {
     List<OrderItemResponse> findAllOrderItem();
     OrderItemResponse findOrderItemById(Long id);
     OrderItemRequest saveOrderItem(OrderItemRequest orderItemRequest);
+    OrderItemRequest updateOrderItem(Long id,OrderItemRequest orderItemRequest);
     void deleteOrderItem(Long id);
 }

@@ -11,9 +11,7 @@ import java.util.Set;
 public class ProductCategoryResponse {
     private Long id;
     private String name;
-    private String desc;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
-    private Timestamp deletedAt;
+    private String description;
+
     private Set<ProductResponse> products;
 }

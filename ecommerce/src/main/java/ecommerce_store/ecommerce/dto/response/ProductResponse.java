@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 public class ProductResponse {
     private Long id;
     private String name;
-    private String desc;
+    private String description;
     private Long categoryId;
     private String categoryName;
     private Long inventoryId;
@@ -21,12 +21,6 @@ public class ProductResponse {
     private Long discountId;
     private String discountName;
     private double discountPercent;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
-    private Timestamp deletedAt;
-
-
-
 
     // Getters and Setters
 }

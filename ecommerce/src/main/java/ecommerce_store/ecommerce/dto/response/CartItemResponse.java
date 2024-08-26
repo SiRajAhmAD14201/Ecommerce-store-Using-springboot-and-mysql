@@ -12,8 +12,6 @@ public class CartItemResponse {
     private Long id;
     private Long productId;
     private int quantity;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
     private ProductResponse product;
 
 }

@@ -12,8 +12,6 @@ public class OrderDetailsRequest {
     private Long userId;
     private double total;
     private Long paymentId;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
 
     // Getters and Setters
 }

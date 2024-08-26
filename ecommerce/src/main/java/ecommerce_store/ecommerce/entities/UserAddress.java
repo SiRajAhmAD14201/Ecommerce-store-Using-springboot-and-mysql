@@ -7,23 +7,34 @@ import lombok.NoArgsConstructor;
 
 
 @Entity
+@Table(name = "user_address")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserAddress {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
-    private Long userId;
+
+    @Column(name = "address")
     private String address;
+
+    @Column(name = "city")
     private String city;
+
+    @Column(name = "postal_code")
     private String postalCode;
-    private String county;
+
+    @Column(name = "country") // Added @Column annotation for clarity
+    private String country;
+
+    @Column(name = "mobile")
     private String mobile;
 
     @ManyToOne
-    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id") // Ensure this matches the foreign key column in your database
     private User user;
 
-    // getters and setters
+    // No need for explicit getters and setters if using Lombok @Data
 }

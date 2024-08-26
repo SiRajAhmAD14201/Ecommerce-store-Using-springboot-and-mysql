@@ -36,6 +36,26 @@ public class PaymentDetailsServiceImpl implements PaymentDetailsService {
         PaymentDetails savedPaymentDetails = paymentDetailsRepo.save(paymentDetails);
         return toRequest(savedPaymentDetails);
     }
+    public PaymentDetailsRequest updatePaymentDetails(Long id, PaymentDetailsRequest paymentDetailsRequest) {
+        // Find the existing PaymentDetails entity or throw an exception if not found
+        PaymentDetails existingPaymentDetails = paymentDetailsRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment details not found for ID " + id));
+
+        // Update the fields with the values from the request
+        existingPaymentDetails.setAmount(paymentDetailsRequest.getAmount());
+        existingPaymentDetails.setProvider(paymentDetailsRequest.getProvider());
+        existingPaymentDetails.setStatus(paymentDetailsRequest.getStatus());
+
+        // Save the updated PaymentDetails entity
+        PaymentDetails updatedPaymentDetails = paymentDetailsRepo.save(existingPaymentDetails);
+
+        // Return the updated PaymentDetailsRequest
+        return new PaymentDetailsRequest(
+                updatedPaymentDetails.getAmount(),
+                updatedPaymentDetails.getProvider(),
+                updatedPaymentDetails.getStatus()
+        );
+    }
 
     @Override
     public void deletePaymentDetails(Long id) {
@@ -52,9 +72,8 @@ public class PaymentDetailsServiceImpl implements PaymentDetailsService {
         paymentDetailsResponse.setStatus(paymentDetails.getStatus());
         paymentDetailsResponse.setAmount(paymentDetails.getAmount());
         paymentDetailsResponse.setProvider(paymentDetails.getProvider());
-        paymentDetailsResponse.setOrderId(paymentDetails.getOrderId());
-        paymentDetailsResponse.setModifiedAt(paymentDetails.getModifiedAt());
-        paymentDetailsResponse.setCreatedAt(paymentDetails.getCreatedAt());
+
+
         return paymentDetailsResponse;
     }
 
@@ -63,7 +82,7 @@ public class PaymentDetailsServiceImpl implements PaymentDetailsService {
         paymentDetails.setStatus(paymentDetailsRequest.getStatus());
         paymentDetails.setAmount(paymentDetailsRequest.getAmount());
         paymentDetails.setProvider(paymentDetailsRequest.getProvider());
-        paymentDetails.setOrderId(paymentDetailsRequest.getOrderId());
+
         return paymentDetails;
     }
 
@@ -72,7 +91,7 @@ public class PaymentDetailsServiceImpl implements PaymentDetailsService {
         paymentDetailsRequest.setStatus(paymentDetails.getStatus());
         paymentDetailsRequest.setAmount(paymentDetails.getAmount());
         paymentDetailsRequest.setProvider(paymentDetails.getProvider());
-        paymentDetailsRequest.setOrderId(paymentDetails.getOrderId());
+
 
         return paymentDetailsRequest;
     }

@@ -29,6 +29,7 @@ public class ProductCategoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list")
     })
+    @GetMapping("/all")
 
     public ResponseEntity<List<ProductCategoryResponse>> getAllProductCategory(){
         List<ProductCategoryResponse> productCategoryResponses=productCategoryService.findAllProductCategory();
@@ -57,6 +58,27 @@ public class ProductCategoryController {
             @RequestBody ProductCategoryRequest productCategoryRequest) {
         ProductCategoryRequest productCategoryRequest1 = productCategoryService.saveProductCategory(productCategoryRequest);
         return new ResponseEntity<>(productCategoryRequest1, HttpStatus.CREATED);
+    }
+
+
+    @Operation(summary = "Update Product Category", description = "Update an existing product category by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product Category updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid ID supplied"),
+            @ApiResponse(responseCode = "404", description = "Product Category not found")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductCategoryRequest> updateProductCategory(
+            @Parameter(description = "ID of the product category to update") @PathVariable Long id,
+            @RequestBody ProductCategoryRequest productCategoryRequest) {
+
+        ProductCategoryRequest updatedProductCategory = productCategoryService.updateProductCategory(id, productCategoryRequest);
+
+        if (updatedProductCategory != null) {
+            return new ResponseEntity<>(updatedProductCategory, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Operation(summary = "Delete a product category", description = "Deletes a product category from the database")

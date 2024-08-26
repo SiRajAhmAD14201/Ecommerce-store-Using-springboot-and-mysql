@@ -9,5 +9,6 @@ public interface ProductInventoryService {
     List<ProductInventoryResponse> findAllProductInventory();
     ProductInventoryResponse findByProductInventoryId(Long id);
     ProductInventoryRequest saveProductInventory(ProductInventoryRequest productInventoryRequest);
+    ProductInventoryRequest updateProductInventory(Long id,ProductInventoryRequest productInventoryRequest);
     void deleteProductInventory(Long id);
 }

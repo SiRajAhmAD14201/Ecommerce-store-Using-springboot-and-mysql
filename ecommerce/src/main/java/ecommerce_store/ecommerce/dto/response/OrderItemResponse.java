@@ -13,6 +13,4 @@ public class OrderItemResponse {
     private Long orderId;
     private Long productId;
     private int quantity;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
 }

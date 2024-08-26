@@ -12,8 +12,5 @@ import java.util.Set;
 public class ProductInventoryResponse {
     private Long id;
     private int quantity;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
-    private Timestamp deletedAt;
     private Set<ProductResponse> products;
 }

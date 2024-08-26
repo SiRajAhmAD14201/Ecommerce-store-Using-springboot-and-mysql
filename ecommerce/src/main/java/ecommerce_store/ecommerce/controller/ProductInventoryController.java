@@ -5,6 +5,8 @@ import ecommerce_store.ecommerce.dto.response.ProductInventoryResponse;
 import ecommerce_store.ecommerce.service.interfaces.ProductInventoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -55,6 +57,27 @@ public class ProductInventoryController {
             @RequestBody ProductInventoryRequest productInventoryRequest) {
         ProductInventoryRequest productInventoryRequest1 = productInventoryService.saveProductInventory(productInventoryRequest);
         return new ResponseEntity<>(productInventoryRequest1, HttpStatus.CREATED);
+    }
+
+
+    @Operation(summary = "Update Product Inventory", description = "Update an existing product inventory by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product Inventory updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid ID supplied"),
+            @ApiResponse(responseCode = "404", description = "Product Inventory not found")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductInventoryRequest> updateProductInventory(
+            @Parameter(description = "ID of the product inventory to update") @PathVariable Long id,
+            @RequestBody ProductInventoryRequest productInventoryRequest) {
+
+        ProductInventoryRequest updatedProductInventory = productInventoryService.updateProductInventory(id, productInventoryRequest);
+
+        if (updatedProductInventory != null) {
+            return new ResponseEntity<>(updatedProductInventory, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Operation(summary = "Delete a product inventory", description = "Deletes a product inventory from the database", responses = {

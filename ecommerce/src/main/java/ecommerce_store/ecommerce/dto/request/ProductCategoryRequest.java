@@ -8,4 +8,4 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor@NoArgsConstructor
 public class ProductCategoryRequest {
     private String name;
-    private String desc;}
+    private String description;}

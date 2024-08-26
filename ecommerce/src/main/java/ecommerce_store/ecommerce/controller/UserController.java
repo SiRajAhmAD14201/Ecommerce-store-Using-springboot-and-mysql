@@ -60,6 +60,27 @@ public class UserController {
         return new ResponseEntity<>(userRequest1, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Update User", description = "Update an existing user by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid ID supplied"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<UserRequest> updateUser(
+            @Parameter(description = "ID of the user to update") @PathVariable Long id,
+            @RequestBody UserRequest userRequest) {
+
+        UserRequest updatedUser = userService.updateUser(id, userRequest);
+
+        if (updatedUser != null) {
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
     @Operation(summary = "Delete a user by ID", description = "Delete a user by their ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "User deleted successfully"),

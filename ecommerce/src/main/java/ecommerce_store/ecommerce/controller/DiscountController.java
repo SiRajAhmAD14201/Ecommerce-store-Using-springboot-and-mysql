@@ -66,6 +66,7 @@ public class DiscountController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
     @DeleteMapping("/{id}")
     @Operation(summary="delete a discount",description = "discount id to delete discount from database",responses = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200",description = "successfully add discount")

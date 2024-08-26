@@ -5,6 +5,8 @@ import ecommerce_store.ecommerce.dto.response.ProductResponse;
 import ecommerce_store.ecommerce.service.interfaces.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,6 +56,28 @@ public class ProductController {
             @RequestBody ProductRequest productRequest) {
         ProductRequest productRequest1 = productService.saveProductRequest(productRequest);
         return new ResponseEntity<>(productRequest1, HttpStatus.CREATED);
+    }
+
+
+
+    @Operation(summary = "Update Product", description = "Update an existing product by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid ID supplied"),
+            @ApiResponse(responseCode = "404", description = "Product not found")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductRequest> updateProduct(
+            @Parameter(description = "ID of the product to update") @PathVariable Long id,
+            @RequestBody ProductRequest productRequest) {
+
+        ProductRequest updatedProduct = productService.updateProductRequest(id, productRequest);
+
+        if (updatedProduct != null) {
+            return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Operation(summary = "Delete a product", description = "Deletes a product from the database", responses = {

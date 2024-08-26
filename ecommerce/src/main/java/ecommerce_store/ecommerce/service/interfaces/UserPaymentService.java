@@ -9,5 +9,6 @@ public interface UserPaymentService {
     List<UserPaymentResponse> findAllUserPayment();
     UserPaymentResponse findUserPaymentById(Long id);
     UserPaymentRequest saveUserPayment(UserPaymentRequest userPaymentRequest);
+    UserPaymentRequest updateUserPayment(Long id,UserPaymentRequest userPaymentRequest);
     void deleteUserPayment(Long id);
 }

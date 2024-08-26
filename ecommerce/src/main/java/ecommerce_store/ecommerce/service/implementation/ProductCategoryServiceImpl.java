@@ -44,6 +44,26 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     }
 
     @Override
+    public ProductCategoryRequest updateProductCategory(Long id, ProductCategoryRequest productCategoryRequest) {
+        // Find the existing ProductCategory entity or throw an exception if not found
+        ProductCategory existingProductCategory = productCategoryRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product Category not found for ID " + id));
+
+        // Update the fields with the values from the request
+        existingProductCategory.setName(productCategoryRequest.getName());
+        existingProductCategory.setDescription(productCategoryRequest.getDescription());
+
+        // Save the updated ProductCategory entity
+        ProductCategory updatedProductCategory = productCategoryRepo.save(existingProductCategory);
+
+        // Return the updated ProductCategoryRequest
+        return new ProductCategoryRequest(
+                updatedProductCategory.getName(),
+                updatedProductCategory.getDescription()
+        );
+    }
+
+    @Override
     public void deleteProductCategory(Long id) {
         Optional<ProductCategory> productCategory = productCategoryRepo.findById(id);
         if (productCategory.isPresent()) {
@@ -59,10 +79,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         return new ProductCategoryResponse(
                 productCategory.getId(),
                 productCategory.getName(),
-                productCategory.getDesc(),
-                productCategory.getCreatedAt(),
-                productCategory.getModifiedAt(),
-                productCategory.getDeletedAt(),
+                productCategory.getDescription(),
                 null // No need to include products in the response
         );
     }
@@ -72,10 +89,8 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         return new ProductCategory(
                 null, // Assuming the ID is auto-generated
                 productCategoryRequest.getName(),
-                productCategoryRequest.getDesc(),
-                new Timestamp(System.currentTimeMillis()), // Set the creation time
-                null, // ModifiedAt will be updated on future changes
-                null, // DeletedAt will be updated if needed
+                productCategoryRequest.getDescription(),
+
                 new HashSet<>() // Assuming products are added later
         );
     }
@@ -84,7 +99,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     private ProductCategoryRequest toRequest(ProductCategory productCategory) {
         return new ProductCategoryRequest(
                 productCategory.getName(),
-                productCategory.getDesc()
+                productCategory.getDescription()
         );
     }
 

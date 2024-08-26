@@ -12,21 +12,23 @@ import lombok.NoArgsConstructor;
 import java.sql.Timestamp;
 import java.util.Set;
 
+
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "product_inventory") // Optional: specify the table name if different from the default
 public class ProductInventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id") // Optional: specify column name explicitly
     private Long id;
+
+    @Column(name = "quantity") // Optional: specify column name explicitly
     private int quantity;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
-    private Timestamp deletedAt;
 
     @OneToMany(mappedBy = "inventory")
     private Set<Product> products;
 
-    // getters and setters
+    // No need for explicit getters and setters if using Lombok @Data
 }

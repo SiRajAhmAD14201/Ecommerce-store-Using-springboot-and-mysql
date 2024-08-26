@@ -38,7 +38,30 @@ public class UserServiceImpl implements UserService {
         user.setUsername(userRequest.getUsername());
         user.setEmail(userRequest.getEmail());
         user.setPassword(userRequest.getPassword());
-        return toRequest(user);
+        User savedUser = userRepo.save(user);
+        return toRequest(savedUser);
+    }
+
+    @Override
+    public UserRequest updateUser(Long id, UserRequest userRequest) {
+        // Find the existing User entity or throw an exception if not found
+        User existingUser = userRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
+
+        // Update the fields of the existing User entity
+        existingUser.setUsername(userRequest.getUsername());
+        existingUser.setPassword(userRequest.getPassword()); // Ensure to handle password securely
+        existingUser.setEmail(userRequest.getEmail());
+
+        // Save the updated User entity
+        User updatedUser = userRepo.save(existingUser);
+
+        // Return the updated UserRequest
+        return new UserRequest(
+                updatedUser.getUsername(),
+                updatedUser.getPassword(), // Ensure to handle password securely
+                updatedUser.getEmail()
+        );
     }
 
     @Override

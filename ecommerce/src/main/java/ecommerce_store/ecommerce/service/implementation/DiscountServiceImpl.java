@@ -32,12 +32,10 @@ public class DiscountServiceImpl implements DiscountService {
        DiscountResponse discountResponse=new DiscountResponse();
        discountResponse.setId(discount.getId());
        discountResponse.setName(discount.getName());
-       discountResponse.setDesc(discount.getDesc());
+       discountResponse.setDescription(discount.getDescription());
        discountResponse.setDiscountPercent(discount.getDiscountPercent());
        discountResponse.setActive(discount.isActive());
-       discountResponse.setCreatedAt(discount.getCreatedAt());
-       discountResponse.setModifiedAt(discount.getModifiedAt());
-       discountResponse.setDeletedAt(discount.getDeletedAt());
+
        return discountResponse;
     }
 
@@ -51,18 +49,10 @@ public class DiscountServiceImpl implements DiscountService {
         // Convert DiscountRequest to Discount entity
         Discount discount = new Discount();
         discount.setName(discountRequest.getName());
-        discount.setDesc(discountRequest.getDesc());
+        discount.setDescription(discountRequest.getDescription());
         discount.setDiscountPercent(discountRequest.getDiscountPercent());
         discount.setActive(discountRequest.isActive());
 
-        // Set timestamps or use current time if not provided
-        discount.setCreatedAt(
-                discountRequest.getCreatedAt() != null ? discountRequest.getCreatedAt() : new Timestamp(System.currentTimeMillis())
-        );
-        discount.setModifiedAt(
-                discountRequest.getModifiedAt() != null ? discountRequest.getModifiedAt() : new Timestamp(System.currentTimeMillis())
-        );
-        discount.setDeletedAt(discountRequest.getDeletedAt());
 
         // Save the Discount entity
         discountRepo.save(discount);
@@ -73,7 +63,26 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public DiscountRequest updateDiscount(Long id, DiscountRequest discountRequest) {
-        return null;
+        // Find the existing Discount entity
+        Discount existingDiscount = discountRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Discount not found against ID: " + id));
+
+        // Update the fields of the existing Discount entity with values from DiscountRequest
+        existingDiscount.setName(discountRequest.getName());
+        existingDiscount.setDescription(discountRequest.getDescription());
+        existingDiscount.setDiscountPercent(discountRequest.getDiscountPercent());
+        existingDiscount.setActive(discountRequest.isActive());
+
+        // Save the updated Discount entity
+        Discount updatedDiscount = discountRepo.save(existingDiscount);
+
+        // Convert updated Discount entity to DiscountRequest DTO and return it
+        return new DiscountRequest(
+                updatedDiscount.getName(),
+                updatedDiscount.getDescription(),
+                updatedDiscount.getDiscountPercent(),
+                updatedDiscount.isActive()
+        );
     }
 
     @Override

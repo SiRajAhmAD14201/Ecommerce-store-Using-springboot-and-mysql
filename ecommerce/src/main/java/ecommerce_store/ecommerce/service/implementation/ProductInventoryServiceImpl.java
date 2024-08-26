@@ -41,6 +41,25 @@ public class ProductInventoryServiceImpl implements ProductInventoryService {
     }
 
     @Override
+    public ProductInventoryRequest updateProductInventory(Long id, ProductInventoryRequest productInventoryRequest) {
+        // Find the existing ProductInventory entity or throw an exception if not found
+        ProductInventory existingProductInventory = productInventoryRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found for ID " + id));
+
+        // Update the fields with the values from the request
+        existingProductInventory.setQuantity(productInventoryRequest.getQuantity());
+
+        // Save the updated ProductInventory entity
+        ProductInventory updatedProductInventory = productInventoryRepo.save(existingProductInventory);
+
+        // Return the updated ProductInventoryRequest
+        return new ProductInventoryRequest(
+                updatedProductInventory.getQuantity()
+
+        );
+    }
+
+    @Override
     public void deleteProductInventory(Long id) {
         Optional<ProductInventory> productInventory=productInventoryRepo.findById(id);
         if (productInventory.isPresent()){
@@ -67,8 +86,6 @@ public class ProductInventoryServiceImpl implements ProductInventoryService {
         ProductInventoryResponse response = new ProductInventoryResponse();
         response.setId(productInventory.getId());
         response.setQuantity(productInventory.getQuantity());
-        response.setCreatedAt(productInventory.getCreatedAt());
-        response.setModifiedAt(productInventory.getModifiedAt());
         return response;
     }
 
@@ -79,7 +96,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService {
         }
         ProductInventory entity = new ProductInventory();
         entity.setQuantity(productInventoryRequest.getQuantity());
-        entity.setCreatedAt(new Timestamp(System.currentTimeMillis())); // Initialize createdAt with current time
+
         return entity;
     }
 

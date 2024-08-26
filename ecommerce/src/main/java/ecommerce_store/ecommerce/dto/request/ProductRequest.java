@@ -10,14 +10,12 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class ProductRequest {
     private String name;
-    private String desc;
+    private String description;
     private Long categoryId;
     private Long inventoryId;
     private double price;
     private Long discountId;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
-    private Timestamp deletedAt;
+
 
     // Getters and Setters
 }

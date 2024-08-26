@@ -7,9 +7,13 @@ import ecommerce_store.ecommerce.dto.response.PaymentDetailsResponse;
 import ecommerce_store.ecommerce.entities.OrderDetails;
 import ecommerce_store.ecommerce.entities.OrderItem;
 import ecommerce_store.ecommerce.entities.PaymentDetails;
+import ecommerce_store.ecommerce.entities.User;
 import ecommerce_store.ecommerce.exception.ResourceNotFoundException;
 import ecommerce_store.ecommerce.repository.OrderDetailsRepo;
+import ecommerce_store.ecommerce.repository.PaymentDetailsRepo;
+import ecommerce_store.ecommerce.repository.UserRepo;
 import ecommerce_store.ecommerce.service.interfaces.OrderDetailsService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +25,16 @@ import java.util.stream.Collectors;
 @Service
 public class OrderDetailsServiceImpl implements OrderDetailsService {
     private final OrderDetailsRepo orderDetailsRepo;
+    private final UserRepo userRepo;
+    private final PaymentDetailsRepo paymentDetailsRepo;
     @Autowired
-    public OrderDetailsServiceImpl(OrderDetailsRepo orderDetailsRepo) {
+    public OrderDetailsServiceImpl(OrderDetailsRepo orderDetailsRepo, UserRepo userRepo, PaymentDetailsRepo paymentDetailsRepo) {
         this.orderDetailsRepo = orderDetailsRepo;
+        this.userRepo = userRepo;
+        this.paymentDetailsRepo = paymentDetailsRepo;
     }
+
+
 
 
     @Override
@@ -42,21 +52,65 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
     }
 
     @Override
+    @Transactional
     public OrderDetailsRequest saveOrderDetails(OrderDetailsRequest orderDetailsRequest) {
-        OrderDetails orderDetails = new OrderDetails();
-        orderDetails.setUserId(orderDetailsRequest.getUserId());
-        orderDetails.setTotal(orderDetailsRequest.getTotal());
-        orderDetails.setPaymentId(orderDetailsRequest.getPaymentId());
+        // Fetch User and PaymentDetails entities from the repositories
+        User user = userRepo.findById(orderDetailsRequest.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-        orderDetails.setCreatedAt(
-                orderDetailsRequest.getCreatedAt() != null ? orderDetailsRequest.getCreatedAt() : currentTimestamp
+        PaymentDetails paymentDetails = paymentDetailsRepo.findById(orderDetailsRequest.getPaymentId())
+                .orElseThrow(() -> new RuntimeException("PaymentDetails not found"));
+
+        // Create a new OrderDetails entity
+        OrderDetails orderDetails = new OrderDetails();
+        orderDetails.setTotal(orderDetailsRequest.getTotal());
+        orderDetails.setUser(user);
+        orderDetails.setPaymentDetails(paymentDetails);
+
+        // Save the entity
+        OrderDetails savedOrderDetails = orderDetailsRepo.save(orderDetails);
+
+        // Map saved entity back to request
+        OrderDetailsRequest savedOrderDetailsRequest = new OrderDetailsRequest();
+        savedOrderDetailsRequest.setUserId(savedOrderDetails.getUser().getId());
+        savedOrderDetailsRequest.setTotal(savedOrderDetails.getTotal());
+        savedOrderDetailsRequest.setPaymentId(savedOrderDetails.getPaymentDetails().getId());
+
+        return savedOrderDetailsRequest;
+    }
+
+    @Override
+    public OrderDetailsRequest updateOrderDetails(Long id, OrderDetailsRequest orderDetailsRequest) {
+        OrderDetails orderDetails = orderDetailsRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("OrderDetails not found for id: " + id));
+
+        // Update the fields of the existing orderDetails object
+        orderDetails.setTotal(orderDetailsRequest.getTotal());
+
+        // Handle associated entities (if needed)
+        if (orderDetailsRequest.getUserId() != null) {
+            orderDetails.setUser(userRepo.findById(orderDetailsRequest.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found for id: " + orderDetailsRequest.getUserId())));
+        }
+        if (orderDetailsRequest.getPaymentId() != null) {
+            orderDetails.setPaymentDetails(paymentDetailsRepo.findById(orderDetailsRequest.getPaymentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("PaymentDetails not found for id: " + orderDetailsRequest.getPaymentId())));
+        }
+
+        // Save updated orderDetails
+        OrderDetails updatedOrderDetails = orderDetailsRepo.save(orderDetails);
+
+        // Convert to request DTO and return
+        return toRequest(updatedOrderDetails);
+    }
+
+    // Convert Entity to Request DTO
+    private OrderDetailsRequest toRequest(OrderDetails orderDetails) {
+        return new OrderDetailsRequest(
+                orderDetails.getUser() != null ? orderDetails.getUser().getId() : null,
+                orderDetails.getTotal(),
+                orderDetails.getPaymentDetails() != null ? orderDetails.getPaymentDetails().getId() : null
         );
-        orderDetails.setModifiedAt(
-                orderDetailsRequest.getModifiedAt() != null ? orderDetailsRequest.getModifiedAt() : currentTimestamp
-        );
-        orderDetailsRepo.save(orderDetails);
-        return orderDetailsRequest;
     }
 
     @Override
@@ -72,11 +126,10 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
     private OrderDetailsResponse toResponse(OrderDetails orderDetails) {
         OrderDetailsResponse response = new OrderDetailsResponse();
         response.setId(orderDetails.getId());
-        response.setUserId(orderDetails.getUserId());
+        response.setUserId(orderDetails.getId());
         response.setTotal(orderDetails.getTotal());
-        response.setPaymentId(orderDetails.getPaymentId());
-        response.setCreatedAt(orderDetails.getCreatedAt());
-        response.setModifiedAt(orderDetails.getModifiedAt());
+        response.setPaymentId(orderDetails.getId());
+
         response.setOrderItems(orderDetails.getOrderItems().stream().map(this::toOrderItemResponse).collect(Collectors.toSet()));
          response.setPaymentDetails(toPaymentDetailsResponse(orderDetails.getPaymentDetails()));
 
@@ -88,8 +141,7 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
         orderItemResponse.setOrderId(orderItemResponse.getOrderId());
         orderItemResponse.setQuantity(orderItem.getQuantity());
         orderItemResponse.setProductId(orderItemResponse.getProductId());
-        orderItemResponse.setCreatedAt(orderItem.getCreatedAt());
-        orderItemResponse.setModifiedAt(orderItem.getModifiedAt());
+
         return  orderItemResponse;
      }
      private PaymentDetailsResponse toPaymentDetailsResponse(PaymentDetails paymentDetails) {
@@ -97,8 +149,7 @@ public class OrderDetailsServiceImpl implements OrderDetailsService {
          response.setId(paymentDetails.getId());
          response.setStatus(paymentDetails.getStatus());
          response.setAmount(paymentDetails.getAmount());
-         response.setCreatedAt(paymentDetails.getCreatedAt());
-         response.setModifiedAt(paymentDetails.getModifiedAt());
+
          return response;
      }
 }

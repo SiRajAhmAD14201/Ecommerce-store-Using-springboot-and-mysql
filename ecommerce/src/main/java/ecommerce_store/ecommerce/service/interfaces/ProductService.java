@@ -9,6 +9,7 @@ public interface ProductService {
     List<ProductResponse> findAllProduct();
     ProductResponse findProductById(Long id);
     ProductRequest saveProductRequest(ProductRequest productRequest);
+    ProductRequest updateProductRequest(Long id,ProductRequest productRequest);
     void deleteProduct(Long id);
 
 }

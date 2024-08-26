@@ -7,29 +7,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "order_item") // Optional: specify the table name if different from the default
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id") // Optional: specify column name explicitly
     private Long id;
 
-    private Long orderId;
-    private Long productId;
+    @Column(name = "quantity") // Optional: specify column name explicitly
     private int quantity;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
 
     @ManyToOne
-    @JoinColumn(name = "orderId", insertable = false, updatable = false)
+    @JoinColumn(name = "order_id")
     private OrderDetails orderDetails;
 
     @ManyToOne
-    @JoinColumn(name = "productId", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id")
     private Product product;
 
-    // getters and setters
+    // No need for explicit getters and setters if using Lombok @Data
 }

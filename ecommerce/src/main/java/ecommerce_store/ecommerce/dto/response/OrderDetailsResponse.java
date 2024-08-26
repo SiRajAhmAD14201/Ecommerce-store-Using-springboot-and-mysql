@@ -16,8 +16,6 @@ public class OrderDetailsResponse {
     private Long userId;
     private double total;
     private Long paymentId;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
     private UserResponse user;
     private Set<OrderItemResponse> orderItems;
     private PaymentDetailsResponse paymentDetails;

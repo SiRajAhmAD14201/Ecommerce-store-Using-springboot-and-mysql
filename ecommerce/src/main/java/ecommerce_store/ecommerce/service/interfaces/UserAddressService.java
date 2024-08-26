@@ -9,5 +9,6 @@ public interface UserAddressService {
     List<UserAddressResponse> findAllUserAddress();
     UserAddressResponse findUserAddressById(Long id);
     UserAddressRequest saveUserAddress(UserAddressRequest userAddressRequest);
+    UserAddressRequest updateUserAddress(Long id,UserAddressRequest userAddressRequest);
     void deleteUserAddress(Long id);
 }

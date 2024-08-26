@@ -16,12 +16,9 @@ import java.util.stream.Collectors;
 public class DiscountResponse {
     private Long id;
     private String name;
-    private String desc;
+    private String description;
     private double discountPercent;
     private boolean active;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
-    private Timestamp deletedAt;
     private Set<ProductResponse> products;
 
 

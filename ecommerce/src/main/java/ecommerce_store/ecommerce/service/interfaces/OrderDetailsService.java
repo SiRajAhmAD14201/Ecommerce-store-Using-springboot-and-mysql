@@ -9,5 +9,7 @@ public interface OrderDetailsService {
     List<OrderDetailsResponse> findAllOrderDetails();
     OrderDetailsResponse findOrderDetailsById(Long id);
     OrderDetailsRequest saveOrderDetails(OrderDetailsRequest orderDetailsRequest);
+    OrderDetailsRequest updateOrderDetails(Long id,OrderDetailsRequest orderDetailsRequest);
     void deleteOrderDetails(Long id);
+
 }

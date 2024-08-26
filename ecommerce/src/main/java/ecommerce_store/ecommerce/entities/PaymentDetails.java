@@ -12,21 +12,21 @@ import java.sql.Timestamp;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "payment_details") // Optional: specify the table name if different from the default
 public class PaymentDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id") // Optional: specify column name explicitly
     private Long id;
 
-    private Long orderId;
+    @Column(name = "amount") // Optional: specify column name explicitly
     private double amount;
+
+    @Column(name = "provider") // Optional: specify column name explicitly
     private String provider;
+
+    @Column(name = "status") // Optional: specify column name explicitly
     private String status;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "orderId", insertable = false, updatable = false)
-    private OrderDetails orderDetails;
-
-    // getters and setters
+    // No need for explicit getters and setters if using Lombok @Data
 }

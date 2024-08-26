@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentDetailsRequest {
-    private Long orderId;
     private double amount;
     private String provider;
     private String status;

@@ -9,5 +9,6 @@ public interface UserService {
     List<UserResponse> findAllUser();
     UserResponse findUserById(Long id);
     UserRequest saveUser(UserRequest userRequest);
+    UserRequest updateUser(Long id,UserRequest userRequest);
     void deleteUser(Long id);
 }

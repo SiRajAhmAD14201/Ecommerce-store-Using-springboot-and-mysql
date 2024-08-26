@@ -13,5 +13,5 @@ public class UserAddressResponse {
     private String address;
     private String city;
     private String postalCode;
-    private String county;
+    private String country;
     private String mobile;}

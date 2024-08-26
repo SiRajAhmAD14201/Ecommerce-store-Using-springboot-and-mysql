@@ -9,5 +9,6 @@ public interface PaymentDetailsService {
     List<PaymentDetailsResponse> findAllPaymentDetails();
     PaymentDetailsResponse findPaymentDetailsById(Long id);
     PaymentDetailsRequest savePaymentDetails(PaymentDetailsRequest paymentDetailsRequest);
+    PaymentDetailsRequest updatePaymentDetails(Long id,PaymentDetailsRequest paymentDetailsRequest);
     void deletePaymentDetails(Long id);
 }

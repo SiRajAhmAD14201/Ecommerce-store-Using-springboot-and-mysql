@@ -58,6 +58,27 @@ public class UserPaymentController {
         return new ResponseEntity<>(userPaymentRequest1, HttpStatus.CREATED);
     }
 
+
+    @Operation(summary = "Update User Payment", description = "Update an existing user payment by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User payment updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid ID supplied"),
+            @ApiResponse(responseCode = "404", description = "User payment not found")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<UserPaymentRequest> updateUserPayment(
+            @Parameter(description = "ID of the user payment to update") @PathVariable Long id,
+            @RequestBody UserPaymentRequest userPaymentRequest) {
+
+        UserPaymentRequest updatedUserPayment = userPaymentService.updateUserPayment(id, userPaymentRequest);
+
+        if (updatedUserPayment != null) {
+            return new ResponseEntity<>(updatedUserPayment, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @Operation(summary = "Delete a user payment by ID", description = "Delete a user payment by its ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "User payment deleted successfully"),

@@ -10,10 +10,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class PaymentDetailsResponse {
     private Long id;
-    private Long orderId;
     private double amount;
     private String provider;
     private String status;
-    private Timestamp createdAt;
-    private Timestamp modifiedAt;
 }

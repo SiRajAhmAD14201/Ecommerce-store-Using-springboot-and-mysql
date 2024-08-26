@@ -6,6 +6,7 @@ import ecommerce_store.ecommerce.service.interfaces.OrderItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,6 +57,26 @@ public class OrderItemController {
             @RequestBody OrderItemRequest orderItemRequest) {
         OrderItemRequest savedOrderItem = orderItemService.saveOrderItem(orderItemRequest);
         return new ResponseEntity<>(savedOrderItem, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Update Order Item", description = "Update an existing order item by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order Item updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid ID supplied"),
+            @ApiResponse(responseCode = "404", description = "Order Item not found")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<OrderItemRequest> updateOrderItem(
+            @Parameter(description = "ID of the order item to update") @PathVariable Long id,
+            @RequestBody OrderItemRequest orderItemRequest) {
+
+        OrderItemRequest updatedOrderItem = orderItemService.updateOrderItem(id, orderItemRequest);
+
+        if (updatedOrderItem != null) {
+            return new ResponseEntity<>(updatedOrderItem, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Operation(summary = "Delete an order item by ID", description = "Deletes an order item from the database", responses = {

@@ -67,10 +67,12 @@ public class CartItemController {
             @PathVariable Long id,
             @Parameter(description = "Cart Item object to update in the database", required = true)
             @RequestBody CartItemRequest cartItemRequest) {
-        // Assuming that saveCartItem method is also used for updates
-        // You might want to create a separate method for update if needed
-        CartItemRequest updatedCartItem = cartItemService.saveCartItem(cartItemRequest);
-        return new ResponseEntity<>(updatedCartItem, HttpStatus.OK);
+        CartItemRequest updatedCartItem = cartItemService.updateCartItem(id,cartItemRequest);
+        if (updatedCartItem!=null){
+            return new ResponseEntity<>(updatedCartItem,HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Operation(summary = "Delete a cart item", description = "Deletes a cart item from the database", responses = {
