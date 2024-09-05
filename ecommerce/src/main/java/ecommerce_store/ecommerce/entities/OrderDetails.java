@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.repository.cdi.Eager;
 
 import java.util.Set;
 
@@ -23,11 +24,11 @@ public class OrderDetails {
     @Column(name = "total") // Optional: specify column name explicitly
     private double total;
 
-    @ManyToOne
+    @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "orderDetails", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "orderDetails",fetch = FetchType.LAZY,cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderItem> orderItems;
 
     @ManyToOne

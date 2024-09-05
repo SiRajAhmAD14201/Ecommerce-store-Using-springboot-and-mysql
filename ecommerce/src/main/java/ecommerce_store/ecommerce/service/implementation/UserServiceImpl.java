@@ -1,9 +1,11 @@
 package ecommerce_store.ecommerce.service.implementation;
 
 import ecommerce_store.ecommerce.dto.request.UserRequest;
-import ecommerce_store.ecommerce.dto.response.UserResponse;
-import ecommerce_store.ecommerce.entities.User;
+import ecommerce_store.ecommerce.dto.response.*;
+import ecommerce_store.ecommerce.entities.*;
 import ecommerce_store.ecommerce.exception.ResourceNotFoundException;
+import ecommerce_store.ecommerce.repository.OrderDetailsRepo;
+import ecommerce_store.ecommerce.repository.UserAddressRepo;
 import ecommerce_store.ecommerce.repository.UserRepo;
 import ecommerce_store.ecommerce.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +13,22 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
    private final UserRepo userRepo;
-
-@Autowired
-    public UserServiceImpl(UserRepo userRepo) {
+   private final UserAddressRepo userAddressRepo;
+   private final OrderDetailsRepo orderDetailsRepo;
+    @Autowired
+    public UserServiceImpl(UserRepo userRepo, UserAddressRepo userAddressRepo, OrderDetailsRepo orderDetailsRepo) {
         this.userRepo = userRepo;
+        this.userAddressRepo = userAddressRepo;
+        this.orderDetailsRepo = orderDetailsRepo;
     }
+
+
 
     @Override
     public List<UserResponse> findAllUser() {
@@ -78,8 +86,24 @@ public class UserServiceImpl implements UserService {
     userResponse.setId(user.getId());
     userResponse.setEmail(user.getEmail());
     userResponse.setUsername(user.getUsername());
-    return userResponse;
+
+        // Fetch addresses associated with the user and map to UserAddressResponse
+        Set<UserAddressResponse> addressResponses = userAddressRepo.findByUserId(user.getId())
+                .stream()
+                .map(this::toUserAddressResponse)
+                .collect(Collectors.toSet());
+        userResponse.setAddresses(addressResponses);
+
+        // Fetch order details associated with the user and map to OrderDetailsResponse
+        Set<OrderDetailsResponse> orderResponses = orderDetailsRepo.findByUserId(user.getId())
+                .stream()
+                .map(this::toOrderDetailsResponse)
+                .collect(Collectors.toSet());
+        userResponse.setOrders(orderResponses);
+
+        return userResponse;
     }
+
     private UserRequest toRequest(User user){
     UserRequest userRequest=new UserRequest();
     userRequest.setEmail(user.getEmail());
@@ -87,4 +111,55 @@ public class UserServiceImpl implements UserService {
     userRequest.setUsername(userRequest.getUsername());
     return userRequest;
     }
+    private UserAddressResponse toUserAddressResponse(UserAddress address) {
+        UserAddressResponse response = new UserAddressResponse();
+        response.setId(address.getId());
+        response.setUserId(address.getUser().getId());
+        response.setAddress(address.getAddress());
+        response.setCountry(address.getCountry());
+        response.setCity(address.getCity());
+        response.setPostalCode(address.getPostalCode());
+        response.setMobile(address.getMobile());
+        return response;
+    }
+
+    private OrderDetailsResponse toOrderDetailsResponse(OrderDetails order) {
+        OrderDetailsResponse response = new OrderDetailsResponse();
+        response.setId(order.getId());
+        response.setUserId(order.getUser().getId());
+        response.setPaymentId(order.getPaymentDetails().getId());
+        response.setTotal(order.getTotal());
+
+        // Map and set Order Items
+        Set<OrderItemResponse> orderItemResponses = order.getOrderItems()
+                .stream()
+                .map(this::toOrderItemResponse)
+                .collect(Collectors.toSet());
+        response.setOrderItems(orderItemResponses);
+
+        // Map and set Payment Details
+        PaymentDetailsResponse paymentDetailsResponse = toPaymentDetailsResponse(order.getPaymentDetails());
+        response.setPaymentDetails(paymentDetailsResponse);
+
+        return response;
+    }
+
+    private OrderItemResponse toOrderItemResponse(OrderItem orderItem) {
+        OrderItemResponse response = new OrderItemResponse();
+        response.setId(orderItem.getId());
+
+        response.setQuantity(orderItem.getQuantity());
+
+        return response;
+    }
+
+    private PaymentDetailsResponse toPaymentDetailsResponse(PaymentDetails paymentDetails) {
+        PaymentDetailsResponse response = new PaymentDetailsResponse();
+        response.setId(paymentDetails.getId());
+        response.setAmount(paymentDetails.getAmount());
+        response.setProvider(paymentDetails.getProvider());
+        response.setStatus(paymentDetails.getStatus());
+        return response;
+    }
+
 }

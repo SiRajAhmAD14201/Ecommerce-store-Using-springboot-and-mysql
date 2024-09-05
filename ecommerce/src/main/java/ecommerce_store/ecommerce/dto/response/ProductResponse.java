@@ -13,14 +13,5 @@ public class ProductResponse {
     private Long id;
     private String name;
     private String description;
-    private Long categoryId;
-    private String categoryName;
-    private Long inventoryId;
-    private int inventoryQuantity;
     private double price;
-    private Long discountId;
-    private String discountName;
-    private double discountPercent;
-
-    // Getters and Setters
 }

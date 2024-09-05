@@ -17,6 +17,6 @@ public class UserResponse {
     private String email;
     private Set<OrderDetailsResponse> orders;
     private Set<UserAddressResponse> addresses;
-    private Set<UserPaymentResponse> payments;
+
 
 }

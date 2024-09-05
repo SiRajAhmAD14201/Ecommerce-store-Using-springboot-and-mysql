@@ -30,6 +30,6 @@ public class Discount {
     @Column(name = "active") // Use snake_case for consistency
     private boolean active;
 
-    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true) // Cascade and orphan removal settings
+    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)// Cascade and orphan removal settings
     private Set<Product> products;
 }

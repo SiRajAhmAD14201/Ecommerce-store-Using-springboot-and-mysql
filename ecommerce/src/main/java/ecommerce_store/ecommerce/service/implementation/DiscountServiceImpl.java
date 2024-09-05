@@ -2,10 +2,14 @@ package ecommerce_store.ecommerce.service.implementation;
 
 import ecommerce_store.ecommerce.dto.request.DiscountRequest;
 import ecommerce_store.ecommerce.dto.response.DiscountResponse;
+import ecommerce_store.ecommerce.dto.response.ProductResponse;
 import ecommerce_store.ecommerce.entities.Discount;
+import ecommerce_store.ecommerce.entities.Product;
 import ecommerce_store.ecommerce.exception.ResourceNotFoundException;
 import ecommerce_store.ecommerce.repository.DiscountRepo;
+import ecommerce_store.ecommerce.repository.ProductRepo;
 import ecommerce_store.ecommerce.service.interfaces.DiscountService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,24 +22,42 @@ import java.util.stream.Collectors;
 public class DiscountServiceImpl implements DiscountService {
 
     private final DiscountRepo discountRepo;
-@Autowired
-    public DiscountServiceImpl(DiscountRepo discountRepo) {
+    private final ProductRepo productRepo;
+    @Autowired
+    public DiscountServiceImpl(DiscountRepo discountRepo, ProductRepo productRepo) {
         this.discountRepo = discountRepo;
+        this.productRepo = productRepo;
     }
-
     @Override
     public List<DiscountResponse> findAllDiscount() {
      return discountRepo.findAll().stream().map(this::toResponse).collect(Collectors.toList());
     }
 
-    private DiscountResponse toResponse(Discount discount){
-       DiscountResponse discountResponse=new DiscountResponse();
-       discountResponse.setId(discount.getId());
-       discountResponse.setName(discount.getName());
-       discountResponse.setDescription(discount.getDescription());
-       discountResponse.setDiscountPercent(discount.getDiscountPercent());
-       discountResponse.setActive(discount.isActive());
+    private DiscountResponse toResponse(Discount discount) {
+        DiscountResponse discountResponse = new DiscountResponse();
 
+        discountResponse.setId(discount.getId());
+        discountResponse.setName(discount.getName());
+        discountResponse.setDescription(discount.getDescription());
+        discountResponse.setDiscountPercent(discount.getDiscountPercent());
+        discountResponse.setActive(discount.isActive());
+
+
+        // Fetch products associated with the discount
+        List<Product> products = productRepo.findByDiscountId(discount.getId());
+
+        // Process products if they exist
+        if (products != null && !products.isEmpty()) {
+            List<ProductResponse> productResponses = products.stream()
+                    .map(product -> new ProductResponse(
+                            product.getId(),
+                            product.getName(),
+                            product.getDescription(),
+                            product.getPrice()
+                    ))
+                    .collect(Collectors.toList());
+            discountResponse.setProducts(productResponses);
+        }
        return discountResponse;
     }
 
@@ -45,6 +67,7 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     @Override
+    @Transactional
     public DiscountRequest saveDiscount(DiscountRequest discountRequest) {
         // Convert DiscountRequest to Discount entity
         Discount discount = new Discount();
@@ -62,6 +85,7 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     @Override
+    @Transactional
     public DiscountRequest updateDiscount(Long id, DiscountRequest discountRequest) {
         // Find the existing Discount entity
         Discount existingDiscount = discountRepo.findById(id)
@@ -86,6 +110,7 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     @Override
+    @Transactional
     public void deleteDiscount(Long id) {
         // Check if Discount exists
         Optional<Discount> discountOptional = discountRepo.findById(id);

@@ -47,9 +47,9 @@ public class OrderItemServiceImpl implements OrderItemService {
     public OrderItemRequest saveOrderItem(OrderItemRequest orderItemRequest) {
         OrderItem orderItem=new OrderItem();
 orderItem.setQuantity(orderItemRequest.getQuantity());
-orderItem.setId(orderItemRequest.getOrderId());
+orderItem.setId(orderItemRequest.getOrderDetailsId());
 orderItem.setId(orderItemRequest.getProductId());
-orderItem.setOrderDetails(orderDetailsRepo.findById(orderItemRequest.getOrderId()).orElseThrow(
+orderItem.setOrderDetails(orderDetailsRepo.findById(orderItemRequest.getOrderDetailsId()).orElseThrow(
                 () -> new ResourceNotFoundException("Order not found")));
 orderItem.setProduct(productRepo.findById(orderItemRequest.getProductId()).orElseThrow(
                 () -> new ResourceNotFoundException("Product not found")));
@@ -78,9 +78,9 @@ orderItem.setProduct(productRepo.findById(orderItemRequest.getProductId()).orEls
         }
 
         // If an OrderDetails ID is provided, set it on the OrderItem
-        if (orderItemRequest.getOrderId() != null) {
-            OrderDetails orderDetails = orderDetailsRepo.findById(orderItemRequest.getOrderId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Order details not found with ID " + orderItemRequest.getOrderId()));
+        if (orderItemRequest.getOrderDetailsId() != null) {
+            OrderDetails orderDetails = orderDetailsRepo.findById(orderItemRequest.getOrderDetailsId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Order details not found with ID " + orderItemRequest.getOrderDetailsId()));
             existingOrderItem.setOrderDetails(orderDetails);
         }
 
@@ -108,8 +108,8 @@ orderItem.setProduct(productRepo.findById(orderItemRequest.getProductId()).orEls
     private OrderItemResponse toResponse(OrderItem orderItem) {
         OrderItemResponse response = new OrderItemResponse();
         response.setId(orderItem.getId());
-        response.setOrderId(orderItem.getId());
-       response.setProductId(orderItem.getId());
+        response.setOrderDetailsId(orderItem.getId());
+       response.setProductId(orderItem.getProduct().getId());
         response.setQuantity(orderItem.getQuantity());
 
         return response;
@@ -119,7 +119,7 @@ orderItem.setProduct(productRepo.findById(orderItemRequest.getProductId()).orEls
       orderItemRequest.setQuantity(orderItem.getQuantity());
 
        orderItemRequest.setProductId(orderItem.getId());
-       orderItemRequest.setOrderId(orderItem.getId());
+       orderItemRequest.setOrderDetailsId(orderItem.getId());
         return orderItemRequest;
   }
 

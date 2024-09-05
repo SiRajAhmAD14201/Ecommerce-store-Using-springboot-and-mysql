@@ -12,6 +12,10 @@ public class CartItemResponse {
     private Long id;
     private Long productId;
     private int quantity;
-    private ProductResponse product;
-
+    private String productName;  // Added field for product name
+    private Double productPrice;
+    private Double totalPrice;
+    public void setTotalPrice() {
+        this.totalPrice = quantity * productPrice;
+    }
 }

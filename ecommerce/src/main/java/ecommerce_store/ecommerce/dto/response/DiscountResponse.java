@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,8 +20,7 @@ public class DiscountResponse {
     private String description;
     private double discountPercent;
     private boolean active;
-    private Set<ProductResponse> products;
-
+    private List<ProductResponse> products;
 
     // Getters and Setters
 

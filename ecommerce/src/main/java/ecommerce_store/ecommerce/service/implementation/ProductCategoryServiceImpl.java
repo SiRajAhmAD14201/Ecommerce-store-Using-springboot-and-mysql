@@ -7,36 +7,51 @@ import ecommerce_store.ecommerce.entities.Product;
 import ecommerce_store.ecommerce.entities.ProductCategory;
 import ecommerce_store.ecommerce.exception.ResourceNotFoundException;
 import ecommerce_store.ecommerce.repository.ProductCategoryRepo;
+import ecommerce_store.ecommerce.repository.ProductRepo;
 import ecommerce_store.ecommerce.service.interfaces.ProductCategoryService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+
 
 @Service
 public class ProductCategoryServiceImpl implements ProductCategoryService {
     private final ProductCategoryRepo productCategoryRepo;
+    private final ProductRepo productRepo;
 
     @Autowired
-    public ProductCategoryServiceImpl(ProductCategoryRepo productCategoryRepo) {
+    public ProductCategoryServiceImpl(ProductCategoryRepo productCategoryRepo, ProductRepo productRepo) {
         this.productCategoryRepo = productCategoryRepo;
+        this.productRepo = productRepo;
     }
 
     @Override
     public List<ProductCategoryResponse> findAllProductCategory() {
-        return productCategoryRepo.findAll().stream().map(this::toResponse).collect(Collectors.toList());
+        return productCategoryRepo.findAll().stream()
+                .map(category -> {
+                    Set<Product> products = productRepo.findByCategoryId(category.getId());
+                    return toResponse(category, products);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
     public ProductCategoryResponse findProductCategoryById(Long id) {
-        return productCategoryRepo.findById(id).map(this::toResponse).orElseThrow(() -> new ResourceNotFoundException("Product category not found against this " + id));
+        ProductCategory productCategory = productCategoryRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product category not found against this " + id));
+
+        Set<Product> products = productRepo.findByCategoryId(id);
+        return toResponse(productCategory, products);
     }
 
     @Override
+    @Transactional
     public ProductCategoryRequest saveProductCategory(ProductCategoryRequest productCategoryRequest) {
         ProductCategory productCategory = toEntity(productCategoryRequest);
         ProductCategory savedCategory = productCategoryRepo.save(productCategory);
@@ -44,6 +59,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     }
 
     @Override
+    @Transactional
     public ProductCategoryRequest updateProductCategory(Long id, ProductCategoryRequest productCategoryRequest) {
         // Find the existing ProductCategory entity or throw an exception if not found
         ProductCategory existingProductCategory = productCategoryRepo.findById(id)
@@ -64,23 +80,34 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteProductCategory(Long id) {
         Optional<ProductCategory> productCategory = productCategoryRepo.findById(id);
         if (productCategory.isPresent()) {
             productCategoryRepo.deleteById(id);
         } else {
-            throw new ResourceNotFoundException("Product category nor found against this " + id);
+            throw new ResourceNotFoundException("Product category not found against this " + id);
         }
     }
 
-
     // Convert Entity to Response DTO
-    private ProductCategoryResponse toResponse(ProductCategory productCategory) {
+    private ProductCategoryResponse toResponse(ProductCategory productCategory, Set<Product> products) {
         return new ProductCategoryResponse(
                 productCategory.getId(),
                 productCategory.getName(),
                 productCategory.getDescription(),
-                null // No need to include products in the response
+                products.stream()
+                        .map(this::toProductResponse)
+                        .collect(Collectors.toSet())
+        );
+    }
+
+    private ProductResponse toProductResponse(Product product) {
+        return new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice()
         );
     }
 
@@ -90,7 +117,6 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
                 null, // Assuming the ID is auto-generated
                 productCategoryRequest.getName(),
                 productCategoryRequest.getDescription(),
-
                 new HashSet<>() // Assuming products are added later
         );
     }
@@ -102,6 +128,4 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
                 productCategory.getDescription()
         );
     }
-
 }
-

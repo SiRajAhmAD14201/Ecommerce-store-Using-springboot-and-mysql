@@ -103,7 +103,12 @@ public class CartItemServiceImpl implements CartItemService {
         cartItemResponse.setId(cartItem.getId());
         cartItemResponse.setProductId(cartItem.getProduct() != null ? cartItem.getProduct().getId() : null);
         cartItemResponse.setQuantity(cartItem.getQuantity());
-
+        // Adding product details to the response
+        if (cartItem.getProduct() != null) {
+            cartItemResponse.setProductName(cartItem.getProduct().getName());
+            cartItemResponse.setProductPrice(cartItem.getProduct().getPrice());
+            cartItemResponse.setTotalPrice();
+        }
         return cartItemResponse;
     }
 }

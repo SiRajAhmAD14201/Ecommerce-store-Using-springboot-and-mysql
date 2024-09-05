@@ -25,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductCategoryRepo productCategoryRepo;
     private final ProductInventoryRepo productInventoryRepo;
     private final DiscountRepo discountRepo;
+
     @Autowired
     public ProductServiceImpl(ProductRepo productRepo, ProductCategoryRepo productCategoryRepo, ProductInventoryRepo productInventoryRepo, DiscountRepo discountRepo) {
         this.productRepo = productRepo;
@@ -32,8 +33,6 @@ public class ProductServiceImpl implements ProductService {
         this.productInventoryRepo = productInventoryRepo;
         this.discountRepo = discountRepo;
     }
-
-
 
     @Override
     public List<ProductResponse> findAllProduct() {
@@ -46,29 +45,25 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse findProductById(Long id) {
         return productRepo.findById(id)
                 .map(this::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found against " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found for ID " + id));
     }
 
     @Override
     public ProductRequest saveProductRequest(ProductRequest productRequest) {
         Product newProduct = new Product();
         toEntity(productRequest, newProduct);
-// Save the newProduct to the repository
         productRepo.save(newProduct);
         return productRequest;
-        }
+    }
 
     @Override
     public ProductRequest updateProductRequest(Long id, ProductRequest productRequest) {
-        // Find the existing Product entity or throw an exception if not found
         Product existingProduct = productRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found for ID " + id));
 
-        // Update the fields of the existing Product entity
         existingProduct.setName(productRequest.getName());
         existingProduct.setDescription(productRequest.getDescription());
 
-        // Set the category, inventory, and discount if provided
         if (productRequest.getCategoryId() != null) {
             ProductCategory category = productCategoryRepo.findById(productRequest.getCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException("Category not found for ID " + productRequest.getCategoryId()));
@@ -89,10 +84,8 @@ public class ProductServiceImpl implements ProductService {
 
         existingProduct.setPrice(productRequest.getPrice());
 
-        // Save the updated Product entity
         Product updatedProduct = productRepo.save(existingProduct);
 
-        // Return the updated ProductRequest
         return new ProductRequest(
                 updatedProduct.getName(),
                 updatedProduct.getDescription(),
@@ -105,36 +98,26 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(Long id) {
-        Optional<Product> product = productRepo.findById(id);
-        if (product.isPresent()) {
+        if (productRepo.existsById(id)) {
             productRepo.deleteById(id);
         } else {
-            throw new ResourceNotFoundException("Product not found against " + id);
+            throw new ResourceNotFoundException("Product not found for ID " + id);
         }
     }
-    // Convert Entity to Response DTO
+
     private ProductResponse toResponse(Product product) {
         return new ProductResponse(
                 product.getId(),
                 product.getName(),
                 product.getDescription(),
-                product.getCategory() != null ? product.getCategory().getId() : null, // Set categoryId
-                product.getCategory() != null ? product.getCategory().getName() : null, // Set categoryName
-                product.getInventory() != null ? product.getInventory().getId() : null, // Set inventoryId
-                product.getInventory() != null ? product.getInventory().getQuantity() : 0, // Set inventoryQuantity
-                product.getPrice(),
-                product.getDiscount() != null ? product.getDiscount().getId() : null, // Set discountId
-                product.getDiscount() != null ? product.getDiscount().getName() : null, // Set discountName
-                product.getDiscount() != null ? product.getDiscount().getDiscountPercent() : 0 // Set discountPercent
+                product.getPrice()
         );
     }
 
-    // Convert Request DTO to Entity
     private Product toEntity(ProductRequest productRequest, Product existingProduct) {
         existingProduct.setName(productRequest.getName());
         existingProduct.setDescription(productRequest.getDescription());
 
-        // Set category, inventory, and discount if present
         if (productRequest.getCategoryId() != null) {
             ProductCategory category = productCategoryRepo.findById(productRequest.getCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
@@ -157,8 +140,4 @@ public class ProductServiceImpl implements ProductService {
 
         return existingProduct;
     }
-    // Convert Request DTO to Entity
-
-
-
 }

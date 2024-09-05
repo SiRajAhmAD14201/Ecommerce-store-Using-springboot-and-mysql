@@ -37,7 +37,7 @@ public class DiscountController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200",description = "successfully retrieved discount by id"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404",description = "discount not found against this id")
     })
-    public ResponseEntity<DiscountResponse> discountById(@Parameter(description = "Cart Item ID to fetch the cart item object", required = true)
+    public ResponseEntity<DiscountResponse> discountById(@Parameter(description = "Discount ID to fetch the discount object", required = true)
                                                              @PathVariable Long id){
         DiscountResponse discountResponse=discountService.findDiscountById(id);
         return new ResponseEntity<>(discountResponse, HttpStatus.OK);

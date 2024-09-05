@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class OrderItemResponse {
     private Long id;
-    private Long orderId;
+    private Long orderDetailsId;
     private Long productId;
     private int quantity;
 }
