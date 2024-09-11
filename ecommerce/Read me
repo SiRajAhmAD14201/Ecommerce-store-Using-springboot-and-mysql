@@ -1,0 +1,60 @@
+
+# E-commerce Store Using Spring Boot and MySQL
+
+This repository contains a fully functional **E-commerce Store** built using **Spring Boot**, **Java 17**, **MySQL**, and **Docker**. The application provides robust features for managing users, products, orders, discounts, and payment details.
+
+## Key Features
+
+- **Spring Boot Framework**: Leveraging Spring Boot for building a scalable and production-ready web application.
+- **Java 17**: Latest Java features ensuring performance, security, and maintainability.
+- **MySQL Database**: Used for storing and managing the application’s data, including products, orders, users, and payments.
+- **JWT Authentication**: Secure authentication using JSON Web Tokens (JWT) for all API endpoints.
+- **Docker Integration**: The entire project is containerized using **Docker** to ensure consistent environments for development, testing, and production.
+- **Swagger API Documentation**: Provides interactive API documentation for easier development and testing.
+- **Product, Discount, and Order Management**: Features include adding and managing products, applying discounts, managing orders, and payment handling.
+  
+## Getting Started
+
+### Prerequisites
+
+- **Java 17**
+- **Maven** (for building the application)
+- **MySQL** (for the database)
+- **Docker** (for containerization)
+
+### Running the Project
+
+To run the project locally:
+
+1. Clone the repository:
+   git clone https://github.com/your-username/ecommerce-store.git
+   cd ecommerce-store
+
+
+2. Build the project using Maven:
+
+   mvn clean package
+
+3. Build and run the Docker container:
+   ```bash
+   docker build -t ecommerce-app .
+   docker run -p 8080:8080 ecommerce-app
+
+4. Access the API at `http://localhost:8080/swagger-ui.html` for interactive API documentation.
+
+## Technologies Used
+
+- **Spring Boot 3.2.7**
+- **Java 17**
+- **MySQL 8**
+- **Docker**
+- **Swagger for API documentation**
+- **JWT for authentication**
+
+## Repository Overview
+
+- **Entities**: Product, User, Order, PaymentDetails, Discount, etc.
+- **Services**: Business logic and API endpoints for managing products, orders, users, discounts, and payments.
+- **Security**: Implements JWT authentication and Spring Security.
+- **Docker Setup**: Containerized for deployment, including a Dockerfile to package the app.
+
